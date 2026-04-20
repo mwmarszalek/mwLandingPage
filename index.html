@@ -590,24 +590,24 @@ body {
     <div class="sm-left">
       <div class="sm-section-title">Nawigacja</div>
       <div class="sm-item" onclick="openWindow('portfolio');closeStartMenu()">
-        <span class="sm-item-icon">📁</span>
+        <img src="project/uploads/My Documents.png" class="sm-item-icon" style="width:24px;height:24px;image-rendering:pixelated;">
         <div><span>Moje Portfolio</span><span class="sm-item-sub">Zrealizowane projekty</span></div>
       </div>
       <div class="sm-item" onclick="openWindow('services');closeStartMenu()">
-        <span class="sm-item-icon">💻</span>
+        <img src="project/uploads/My Computer.png" class="sm-item-icon" style="width:24px;height:24px;image-rendering:pixelated;">
         <div><span>Usługi</span><span class="sm-item-sub">Co oferuję</span></div>
       </div>
       <div class="sm-item" onclick="openWindow('about');closeStartMenu()">
-        <span class="sm-item-icon">👤</span>
+        <img src="project/uploads/User Accounts.png" class="sm-item-icon" style="width:24px;height:24px;image-rendering:pixelated;">
         <div><span>O mnie</span><span class="sm-item-sub">Kim jestem</span></div>
       </div>
       <div class="sm-sep"></div>
       <div class="sm-item" onclick="openWindow('contact');closeStartMenu()">
-        <span class="sm-item-icon">✉️</span>
+        <img src="project/uploads/Outlook Express.png" class="sm-item-icon" style="width:24px;height:24px;image-rendering:pixelated;">
         <div><span>Kontakt</span><span class="sm-item-sub">Napisz do mnie</span></div>
       </div>
       <div class="sm-item" onclick="openWindow('faq');closeStartMenu()">
-        <span class="sm-item-icon">❓</span>
+        <img src="project/uploads/Wordpad.png" class="sm-item-icon" style="width:24px;height:24px;image-rendering:pixelated;">
         <div><span>FAQ</span><span class="sm-item-sub">Często zadawane pytania</span></div>
       </div>
       <div class="sm-sep"></div>
@@ -751,6 +751,7 @@ const WINDOWS = {
   portfolio: {
     title: 'Moje Portfolio',
     icon: '📁',
+    img: 'project/uploads/My Documents.png',
     w: 660, h: 460,
     status: '4 obiekt(ów)',
     content: () => `
@@ -869,18 +870,6 @@ const WINDOWS = {
               </div>
               <span style="font-size:11px;font-family:Tahoma;text-align:center;line-height:1.3;color:#000;">JLL Property</span>
             </div>
-            <div
-              style="display:inline-flex;flex-direction:column;align-items:center;gap:4px;padding:6px;cursor:pointer;border:1px solid transparent;border-radius:2px;width:90px;vertical-align:top;"
-              ondblclick="window.open('https://mwmarszalek.dev/','_blank')"
-              onmouseenter="this.style.background='#c8d8f8';this.style.borderColor='#6090d0'"
-              onmouseleave="this.style.background='transparent';this.style.borderColor='transparent'"
-            >
-              <div style="position:relative;width:48px;height:48px;">
-                <img src="project/uploads/Internet Explorer 6.png" style="width:48px;height:48px;">
-                <div style="position:absolute;bottom:0;left:0;width:14px;height:14px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;border:1px solid #bbb;">↗</div>
-              </div>
-              <span style="font-size:11px;font-family:Tahoma;text-align:center;line-height:1.3;color:#000;">marszalek.dev</span>
-            </div>
           </div>
         </div>
       </div>`
@@ -889,6 +878,7 @@ const WINDOWS = {
   about: {
     title: 'O mnie',
     icon: '👤',
+    img: 'project/uploads/User Accounts.png',
     w: 580, h: 440,
     status: 'marszal. — Developer',
     content: () => `
@@ -918,6 +908,7 @@ const WINDOWS = {
   services: {
     title: 'Usługi',
     icon: '💻',
+    img: 'project/uploads/My Computer.png',
     w: 620, h: 460,
     status: '4 usługi dostępne',
     content: () => `
@@ -947,6 +938,7 @@ const WINDOWS = {
   contact: {
     title: 'Kontakt — Umów rozmowę',
     icon: '✉️',
+    img: 'project/uploads/Outlook Express.png',
     w: 560, h: 460,
     status: 'Odpowiedź w < 24h',
     content: () => `
@@ -954,7 +946,7 @@ const WINDOWS = {
         <h2>✉️ Napisz do mnie</h2>
         <p>Masz pomysł na aplikację? Potrzebujesz zautomatyzować procesy w firmie? Pierwsza rozmowa jest bezpłatna i niezobowiązująca.</p>
         <div style="margin-bottom:16px;padding:10px;background:#f0f4ff;border:1px solid #c0d0f0;border-radius:3px;font-size:11px;line-height:1.7;">
-          📧 <strong>kontakt@marszal.dev</strong><br>
+          📧 <strong>mw.marszalek@outlook.com</strong><br>
           ⚡ Odpowiedź w &lt;24h<br>
           🎯 Bezpłatna wycena projektu
         </div>
@@ -971,6 +963,7 @@ const WINDOWS = {
   faq: {
     title: 'FAQ — Często zadawane pytania',
     icon: '❓',
+    img: 'project/uploads/Wordpad.png',
     w: 580, h: 440,
     status: '5 pytań',
     content: () => `
@@ -1040,7 +1033,7 @@ function openWindow(id) {
   const titlebarStyle = THEMES[currentTheme] || THEMES.classic;
   win.innerHTML = `
     <div class="xp-titlebar" style="background:${titlebarStyle}" onmousedown="startDrag(event,'${id}')">
-      <span class="xp-title-icon">${cfg.icon}</span>
+      <img src="${cfg.img}" style="width:16px;height:16px;image-rendering:pixelated;flex-shrink:0;">
       <span class="xp-title-text">${cfg.title}</span>
       <div class="xp-controls">
         <button class="xp-btn" onclick="minimizeWindow('${id}')" title="Minimalizuj"><img src="project/uploads/Minimize.png" style="width:18px;height:18px;display:block;"></button>
@@ -1061,7 +1054,7 @@ function openWindow(id) {
   const tbBtn = document.createElement('button');
   tbBtn.className = 'taskbar-btn active';
   tbBtn.id = 'tb-' + id;
-  tbBtn.innerHTML = cfg.icon + ' ' + cfg.title;
+  tbBtn.innerHTML = `<img src="${cfg.img}" style="width:16px;height:16px;image-rendering:pixelated;flex-shrink:0;"> ${cfg.title}`;
   tbBtn.onclick = () => {
     if (win.classList.contains('minimized')) { win.classList.remove('minimized'); focusWindow(id); }
     else if (win.classList.contains('focused')) { minimizeWindow(id); }
