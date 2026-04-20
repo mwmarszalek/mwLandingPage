@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>marszal. — Windows XP</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; user-select:none; }
+
+body {
+  width:100vw; height:100vh;
+  overflow:hidden;
+  font-family:'Tahoma','Segoe UI',sans-serif;
+  font-size:11px;
+  background:#1058c3;
+  cursor:default;
+}
+
+/* ── DESKTOP ── */
+#desktop {
+  position:absolute;
+  inset:0;
+  bottom:40px;
+  overflow:hidden;
+}
+
+#wallpaper {
+  position:absolute;
+  inset:0;
+  background:url('project/uploads/90278.jpg') center center / cover no-repeat;
+}
+
+/* ── DESKTOP ICONS ── */
+#icons-area {
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+
+.icon {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  width:76px;
+  padding:4px;
+  border-radius:3px;
+  cursor:pointer;
+  gap:4px;
+  pointer-events:all;
+}
+.icon:hover { background:rgba(49,106,197,0.35); }
+.icon.selected { background:rgba(49,106,197,0.5); outline:1px dotted rgba(255,255,255,0.8); }
+
+.icon-img {
+  width:48px; height:48px;
+  image-rendering:pixelated;
+}
+
+.icon-label {
+  font-size:11px;
+  color:#fff;
+  text-align:center;
+  line-height:1.3;
+  text-shadow:1px 1px 2px rgba(0,0,0,0.9),-1px -1px 2px rgba(0,0,0,0.5);
+  word-break:break-word;
+  max-width:74px;
+}
+
+/* ── TASKBAR ── */
+#taskbar {
+  position:fixed;
+  bottom:0; left:0; right:0;
+  height:40px;
+  background:linear-gradient(180deg,#2d6ae0 0%,#1a4fc0 8%,#1652c1 15%,#1a55c8 40%,#1a58cc 50%,#1058c3 100%);
+  border-top:1px solid #0a2471;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  padding:0 4px;
+  z-index:9000;
+  box-shadow:0 -1px 0 #5588dd inset;
+  overflow:hidden;
+}
+
+#start-btn {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  background:linear-gradient(180deg,#60c820 0%,#40a808 35%,#2a8800 55%,#50b810 100%);
+  border:1px solid #1a5800;
+  border-left:none;
+  border-radius:0 14px 14px 0;
+  padding:3px 16px 3px 10px;
+  height:34px;
+  cursor:pointer;
+  box-shadow:1px 1px 0 rgba(255,255,255,0.35) inset,2px 0 4px rgba(0,0,0,0.4);
+  flex-shrink:0;
+  margin-right:6px;
+}
+#start-btn:hover {
+  background:linear-gradient(180deg,#78e030 0%,#58c010 35%,#3a9800 55%,#60c820 100%);
+}
+#start-btn:active {
+  background:linear-gradient(180deg,#2a8800 0%,#40a808 60%,#60c820 100%);
+  box-shadow:1px 1px 2px rgba(0,0,0,0.4) inset;
+}
+.start-text {
+  color:#fff;
+  font-family:'Tahoma',sans-serif;
+  font-size:14px;
+  font-weight:700;
+  font-style:italic;
+  text-shadow:1px 1px 2px rgba(0,0,0,0.6);
+  letter-spacing:0.5px;
+}
+
+.taskbar-div {
+  width:2px; height:30px;
+  background:linear-gradient(180deg,transparent,#0a2471,transparent);
+  margin:0 2px;
+  flex-shrink:0;
+}
+
+.taskbar-btn {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  height:28px;
+  padding:0 10px;
+  background:linear-gradient(180deg,#4a7ed4 0%,#2a5cbf 100%);
+  border:1px solid #0a2471;
+  border-radius:3px;
+  color:#fff;
+  font-family:'Tahoma',sans-serif;
+  font-size:11px;
+  cursor:pointer;
+  min-width:120px;
+  max-width:160px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  box-shadow:1px 1px 0 rgba(255,255,255,0.3) inset;
+}
+.taskbar-btn.active {
+  background:linear-gradient(180deg,#1a3a8c 0%,#2a5cbf 100%);
+  box-shadow:1px 1px 2px rgba(0,0,0,0.5) inset;
+  border-color:#05155a;
+}
+.taskbar-btn:hover { background:linear-gradient(180deg,#5a8ee4 0%,#3a6ccf 100%); }
+
+#systray {
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:linear-gradient(180deg,#1252bc 0%,#1a5ccc 40%,#1456c4 100%);
+  border:1px solid #0a2471;
+  border-radius:3px 0 0 3px;
+  height:30px;
+  padding:0 10px;
+  color:#fff;
+  font-size:11px;
+  font-family:'Tahoma',sans-serif;
+  white-space:nowrap;
+  box-shadow:1px 0 0 rgba(255,255,255,0.2) inset;
+}
+#clock { font-size:11px; color:#fff; }
+
+/* ── START MENU ── */
+#start-menu {
+  position:fixed;
+  bottom:40px; left:0;
+  width:380px;
+  background:#fff;
+  border:1px solid #0a2471;
+  border-radius:8px 8px 0 0;
+  box-shadow:3px 0 8px rgba(0,0,0,0.4);
+  z-index:9500;
+  display:none;
+  overflow:hidden;
+}
+#start-menu.open { display:block; }
+
+.sm-header {
+  background:linear-gradient(90deg,#1652c1,#4a8ae4);
+  padding:12px 16px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  border-radius:6px 6px 0 0;
+}
+.sm-avatar {
+  width:52px; height:52px;
+  border-radius:4px;
+  border:2px solid #fff;
+  background:linear-gradient(135deg,#4a8ae4,#1652c1);
+  display:flex; align-items:center; justify-content:center;
+  font-size:26px;
+}
+.sm-username {
+  color:#fff;
+  font-size:14px;
+  font-weight:700;
+  text-shadow:1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.sm-body {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  min-height:240px;
+}
+.sm-left {
+  border-right:1px solid #d4d0c8;
+  padding:8px 0;
+}
+.sm-right {
+  background:#e8e4dc;
+  padding:8px 0;
+}
+.sm-section-title {
+  font-size:10px;
+  color:#0a2471;
+  padding:4px 16px 2px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+}
+.sm-item {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:6px 16px;
+  cursor:pointer;
+  font-size:12px;
+  color:#000;
+}
+.sm-item:hover { background:linear-gradient(90deg,#2a6cbf,#4a8ae4); color:#fff; }
+.sm-item:hover .sm-item-sub { color:rgba(255,255,255,0.8); }
+.sm-item-icon { font-size:22px; flex-shrink:0; width:28px; text-align:center; }
+.sm-item-sub { font-size:10px; color:#666; display:block; }
+.sm-sep { height:1px; background:#d4d0c8; margin:4px 0; }
+
+.sm-footer {
+  background:linear-gradient(90deg,#1652c1,#4a8ae4);
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  padding:8px 12px;
+}
+.sm-footer-btn {
+  display:flex; align-items:center; gap:6px;
+  background:linear-gradient(180deg,#5a88e0 0%,#2a5cbf 100%);
+  border:1px solid #0a2471;
+  border-radius:3px;
+  padding:5px 14px;
+  color:#fff;
+  font-family:'Tahoma',sans-serif;
+  font-size:11px;
+  cursor:pointer;
+}
+.sm-footer-btn:hover { background:linear-gradient(180deg,#7aaaf0 0%,#4a7cd4 100%); }
+
+/* ── WINDOWS ── */
+.xp-window {
+  position:absolute;
+  min-width:300px;
+  min-height:200px;
+  background:#ece9d8;
+  border:2px solid #0a2471;
+  border-radius:8px 8px 4px 4px;
+  box-shadow:3px 3px 10px rgba(0,0,0,0.5);
+  display:flex;
+  flex-direction:column;
+  z-index:100;
+  overflow:hidden;
+}
+.xp-window.minimized { display:none; }
+.xp-window.focused { z-index:500; }
+
+.xp-titlebar {
+  height:30px;
+  background:var(--titlebar-bg, linear-gradient(180deg,#000080 0%,#000080 100%));
+  display:flex;
+  align-items:center;
+  padding:0 4px 0 8px;
+  gap:6px;
+  border-radius:6px 6px 0 0;
+  cursor:move;
+  flex-shrink:0;
+  box-shadow:0 1px 0 rgba(255,255,255,0.35) inset;
+}
+.xp-window.inactive .xp-titlebar {
+  background:linear-gradient(180deg,#7299cd 0%,#7299cd 30%,#6a8cc0 60%,#7298cc 100%);
+}
+
+.xp-title-icon { font-size:16px; flex-shrink:0; }
+.xp-title-text {
+  flex:1;
+  color:#fff;
+  font-size:12px;
+  font-weight:700;
+  font-family:'Tahoma',sans-serif;
+  text-shadow:1px 1px 2px rgba(0,0,0,0.5);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.xp-controls {
+  display:flex;
+  gap:2px;
+  flex-shrink:0;
+}
+.xp-btn {
+  width:20px; height:20px;
+  border-radius:3px;
+  border:none;
+  cursor:pointer;
+  padding:0;
+  background:none;
+  display:flex; align-items:center; justify-content:center;
+}
+.xp-btn:hover { filter:brightness(1.15); }
+.xp-btn:active { filter:brightness(0.85); }
+
+.xp-menubar {
+  display:flex;
+  background:#ece9d8;
+  border-bottom:1px solid #d4d0c8;
+  padding:2px 4px;
+  gap:2px;
+  flex-shrink:0;
+}
+.xp-menu-item {
+  padding:2px 8px;
+  font-size:11px;
+  border-radius:3px;
+  cursor:pointer;
+  color:#000;
+}
+.xp-menu-item:hover { background:#316ac5; color:#fff; }
+
+.xp-content {
+  flex:1;
+  overflow-y:auto;
+  background:#fff;
+  padding:20px;
+}
+.xp-content::-webkit-scrollbar { width:16px; }
+.xp-content::-webkit-scrollbar-track { background:#e8e4dc; border:1px solid #d4d0c8; }
+.xp-content::-webkit-scrollbar-thumb { background:linear-gradient(90deg,#c8c4bc,#b8b4ac); border:1px solid #a8a49c; border-radius:2px; }
+
+.xp-statusbar {
+  height:22px;
+  background:#ece9d8;
+  border-top:1px solid #d4d0c8;
+  display:flex;
+  align-items:center;
+  padding:0 8px;
+  font-size:11px;
+  color:#444;
+  flex-shrink:0;
+}
+.xp-status-panel {
+  border:1px solid #d4d0c8;
+  border-right:1px solid #fff;
+  padding:1px 8px;
+  height:18px;
+  display:flex; align-items:center;
+}
+
+/* ── WINDOW CONTENT ── */
+.win-section h2 {
+  font-size:18px;
+  color:#1652c1;
+  margin-bottom:12px;
+  padding-bottom:8px;
+  border-bottom:2px solid #1652c1;
+  font-family:'Tahoma',sans-serif;
+}
+.win-section p {
+  font-size:12px;
+  line-height:1.7;
+  color:#222;
+  margin-bottom:12px;
+}
+
+/* Portfolio grid */
+.port-items { display:flex; flex-direction:column; gap:12px; }
+.port-item {
+  border:1px solid #d4d0c8;
+  border-radius:4px;
+  padding:12px;
+  background:#f8f8f4;
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+}
+.port-item-icon { font-size:32px; flex-shrink:0; }
+.port-item h3 { font-size:13px; color:#1652c1; margin-bottom:4px; }
+.port-item p { font-size:11px; color:#444; margin:0 0 6px; }
+.port-link {
+  font-size:11px; color:#1652c1; text-decoration:underline; cursor:pointer;
+}
+.port-link:hover { color:#c84000; }
+
+/* Services */
+.srv-list { display:flex; flex-direction:column; gap:10px; }
+.srv-item {
+  border:1px solid #d4d0c8; border-radius:4px; padding:12px;
+  background:#f8f8f4; display:flex; gap:12px; align-items:flex-start;
+}
+.srv-item-icon { font-size:26px; flex-shrink:0; }
+.srv-item h3 { font-size:12px; color:#1652c1; margin-bottom:4px; }
+.srv-item p { font-size:11px; color:#444; margin:0; line-height:1.6; }
+
+/* About */
+.about-card {
+  display:flex; gap:20px; align-items:flex-start;
+  border:1px solid #d4d0c8; border-radius:4px; padding:16px;
+  background:#f8f8f4; margin-bottom:16px;
+}
+.about-avatar { font-size:52px; flex-shrink:0; }
+.about-info h3 { font-size:14px; color:#1652c1; margin-bottom:4px; }
+.about-info .role { font-size:11px; color:#888; margin-bottom:10px; }
+.about-info p { font-size:11px; line-height:1.7; color:#333; margin-bottom:8px; }
+.xp-badge {
+  display:inline-block; background:#1652c1; color:#fff;
+  font-size:10px; padding:2px 8px; border-radius:2px; margin-right:4px; margin-bottom:4px;
+}
+
+/* FAQ */
+.faq-list { display:flex; flex-direction:column; gap:8px; }
+.faq-q-btn {
+  width:100%; text-align:left; padding:8px 12px;
+  background:#f0eee4; border:1px solid #d4d0c8;
+  font-family:'Tahoma',sans-serif; font-size:11px;
+  cursor:pointer; border-radius:3px; color:#000;
+  display:flex; justify-content:space-between; align-items:center;
+}
+.faq-q-btn:hover { background:#316ac5; color:#fff; }
+.faq-q-btn.open { background:#1652c1; color:#fff; }
+.faq-answer {
+  display:none; padding:8px 12px; font-size:11px; line-height:1.7;
+  color:#333; background:#f8f8f4; border:1px solid #d4d0c8;
+  border-top:none; border-radius:0 0 3px 3px;
+}
+.faq-answer.open { display:block; }
+
+/* Contact */
+.contact-form { display:flex; flex-direction:column; gap:10px; }
+.cf-label { font-size:11px; color:#444; margin-bottom:2px; display:block; font-weight:700; }
+.cf-input,.cf-textarea {
+  width:100%; border:2px inset #d4d0c8; background:#fff;
+  font-family:'Tahoma',sans-serif; font-size:12px; padding:4px 6px; color:#000;
+  outline:none;
+}
+.cf-input:focus,.cf-textarea:focus { border-color:#1652c1; }
+.cf-textarea { resize:vertical; min-height:80px; }
+.xp-submit-btn {
+  align-self:flex-start;
+  background:linear-gradient(180deg,#f0ece0 0%,#dcd8cc 100%);
+  border:2px outset #d4d0c8; padding:4px 16px;
+  font-family:'Tahoma',sans-serif; font-size:12px;
+  cursor:pointer; color:#000;
+}
+.xp-submit-btn:hover { background:linear-gradient(180deg,#f8f4e8 0%,#ece8dc 100%); }
+.xp-submit-btn:active { border-style:inset; }
+
+/* Resize handle */
+.xp-resize {
+  position:absolute;
+  bottom:0; right:0;
+  width:16px; height:16px;
+  cursor:nw-resize;
+}
+
+/* ── TWEAKS PANEL ── */
+#tweaks-panel {
+  position:fixed; bottom:50px; right:20px;
+  background:#ece9d8; border:2px solid #0a2471;
+  border-radius:6px 6px 4px 4px; padding:0;
+  z-index:10000; width:240px;
+  box-shadow:3px 3px 8px rgba(0,0,0,0.4);
+  display:none; overflow:hidden;
+}
+#tweaks-panel.show { display:block; }
+.tw-titlebar {
+  height:24px; background:var(--titlebar-bg,linear-gradient(180deg,#000080,#000080));
+  display:flex; align-items:center; justify-content:space-between; padding:0 8px;
+  color:#fff; font-size:11px; font-weight:700;
+}
+.tw-close-btn {
+  background:none; border:none; color:#fff; cursor:pointer; font-size:13px; line-height:1;
+}
+.tw-body { padding:12px; }
+.tw-row { margin-bottom:10px; }
+.tw-lbl { font-size:11px; color:#444; margin-bottom:4px; display:block; }
+.tw-sel { width:100%; font-family:'Tahoma',sans-serif; font-size:11px; padding:3px; border:2px inset #d4d0c8; }
+
+/* ── CONTEXT MENU ── */
+#ctx-menu {
+  position:fixed;
+  background:#ece9d8;
+  border:1px solid #0a2471;
+  border-radius:3px;
+  box-shadow:2px 2px 6px rgba(0,0,0,0.35);
+  z-index:9999;
+  display:none;
+  min-width:160px;
+  padding:2px 0;
+}
+#ctx-menu.show { display:block; }
+.ctx-item {
+  padding:4px 20px;
+  font-size:11px;
+  cursor:pointer;
+  color:#000;
+  white-space:nowrap;
+}
+.ctx-item:hover { background:#316ac5; color:#fff; }
+.ctx-sep { height:1px; background:#d4d0c8; margin:2px 4px; }
+
+@media(max-width:768px){
+  #start-menu { width:100%; }
+  .xp-window { left:4px!important; right:4px!important; width:calc(100vw - 8px)!important; }
+}
+</style>
+</head>
+<body>
+
+<div id="desktop">
+  <div id="wallpaper"></div>
+
+  <div id="icons-area">
+    <div class="icon" ondblclick="openWindow('portfolio')" onclick="selectIcon(this)">
+      <img class="icon-img" src="project/uploads/My Documents.png" alt="Portfolio">
+      <span class="icon-label">Moje Portfolio</span>
+    </div>
+    <div class="icon" ondblclick="openWindow('about')" onclick="selectIcon(this)">
+      <img class="icon-img" src="project/uploads/User Accounts.png" alt="O mnie">
+      <span class="icon-label">O mnie</span>
+    </div>
+    <div class="icon" ondblclick="openWindow('services')" onclick="selectIcon(this)">
+      <img class="icon-img" src="project/uploads/My Computer.png" alt="Usługi">
+      <span class="icon-label">Usługi</span>
+    </div>
+    <div class="icon" ondblclick="openWindow('contact')" onclick="selectIcon(this)">
+      <img class="icon-img" src="project/uploads/Outlook Express.png" alt="Kontakt">
+      <span class="icon-label">Kontakt</span>
+    </div>
+    <div class="icon" ondblclick="openWindow('faq')" onclick="selectIcon(this)">
+      <img class="icon-img" src="project/uploads/Wordpad.png" alt="FAQ">
+      <span class="icon-label">FAQ</span>
+    </div>
+  </div>
+</div>
+
+<div id="taskbar">
+  <button id="start-btn" onclick="toggleStartMenu()">
+    <img src="project/uploads/clipart1893750.png" alt="win" style="height:22px;width:22px;display:block;">
+    <span class="start-text">start</span>
+  </button>
+  <div class="taskbar-div"></div>
+  <div id="taskbar-windows"></div>
+  <div id="systray">
+    <span>🔊</span>
+    <span>📶</span>
+    <span id="clock"></span>
+  </div>
+</div>
+
+<div id="start-menu">
+  <div class="sm-header">
+    <div class="sm-avatar">👤</div>
+    <div>
+      <div class="sm-username">marszal</div>
+      <div style="color:rgba(255,255,255,0.8);font-size:11px;">Developer</div>
+    </div>
+  </div>
+  <div class="sm-body">
+    <div class="sm-left">
+      <div class="sm-section-title">Nawigacja</div>
+      <div class="sm-item" onclick="openWindow('portfolio');closeStartMenu()">
+        <span class="sm-item-icon">📁</span>
+        <div><span>Moje Portfolio</span><span class="sm-item-sub">Zrealizowane projekty</span></div>
+      </div>
+      <div class="sm-item" onclick="openWindow('services');closeStartMenu()">
+        <span class="sm-item-icon">💻</span>
+        <div><span>Usługi</span><span class="sm-item-sub">Co oferuję</span></div>
+      </div>
+      <div class="sm-item" onclick="openWindow('about');closeStartMenu()">
+        <span class="sm-item-icon">👤</span>
+        <div><span>O mnie</span><span class="sm-item-sub">Kim jestem</span></div>
+      </div>
+      <div class="sm-sep"></div>
+      <div class="sm-item" onclick="openWindow('contact');closeStartMenu()">
+        <span class="sm-item-icon">✉️</span>
+        <div><span>Kontakt</span><span class="sm-item-sub">Napisz do mnie</span></div>
+      </div>
+      <div class="sm-item" onclick="openWindow('faq');closeStartMenu()">
+        <span class="sm-item-icon">❓</span>
+        <div><span>FAQ</span><span class="sm-item-sub">Często zadawane pytania</span></div>
+      </div>
+      <div class="sm-sep"></div>
+      <div class="sm-item" onclick="window.open('https://tnz-app.netlify.app','_blank');closeStartMenu()">
+        <span class="sm-item-icon">🌐</span>
+        <div><span>TNZ App</span><span class="sm-item-sub">tnz-app.netlify.app</span></div>
+      </div>
+    </div>
+    <div class="sm-right">
+      <div class="sm-section-title">Technologie</div>
+      <div class="sm-item"><span class="sm-item-icon">⚛️</span> React</div>
+      <div class="sm-item"><span class="sm-item-icon">🟨</span> JavaScript</div>
+      <div class="sm-item"><span class="sm-item-icon">🎨</span> CSS / PWA</div>
+      <div class="sm-item"><span class="sm-item-icon">🔥</span> Firebase</div>
+      <div class="sm-item"><span class="sm-item-icon">🚀</span> Netlify</div>
+      <div class="sm-sep"></div>
+      <div class="sm-section-title">marszal.</div>
+      <div class="sm-item" style="font-size:10px;color:#666;cursor:default;">Aplikacje webowe<br>dla małych firm</div>
+    </div>
+  </div>
+  <div class="sm-footer">
+    <button class="sm-footer-btn" onclick="closeStartMenu()">✕ Zamknij menu</button>
+  </div>
+</div>
+
+<div id="windows-container"></div>
+
+<div id="tweaks-panel">
+  <div class="tw-titlebar">
+    <span>⚙ Wygląd</span>
+    <button class="tw-close-btn" onclick="document.getElementById('tweaks-panel').classList.remove('show')">✕</button>
+  </div>
+  <div class="tw-body">
+    <div class="tw-row">
+      <span class="tw-lbl">Motyw okien</span>
+      <select id="tw-theme" class="tw-sel" onchange="setTheme(this.value)">
+        <option value="classic">Classic</option>
+        <option value="luna">Luna (niebieski)</option>
+        <option value="dark">Dark Luna</option>
+      </select>
+    </div>
+    <div class="tw-row">
+      <span class="tw-lbl">Tapeta</span>
+      <select id="tw-wallpaper" class="tw-sel" onchange="setWallpaper(this.value)">
+        <option value="bliss">Bliss (zielone wzgórza)</option>
+        <option value="space">Przestrzeń kosmiczna</option>
+        <option value="solid">Jednolity niebieski</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div id="ctx-menu">
+  <div class="ctx-item" onclick="arrangeIcons();closeCtx()">Rozmieść ikony</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="document.getElementById('tweaks-panel').classList.toggle('show');closeCtx()">⚙ Właściwości ekranu</div>
+</div>
+
+<script>
+// ── THEME ──
+const THEMES = {
+  classic: 'linear-gradient(180deg,#000080 0%,#000080 100%)',
+  luna:    'linear-gradient(180deg,#2d74e8 0%,#1c5bc3 30%,#1a55bf 60%,#1868d4 100%)',
+  dark:    'linear-gradient(180deg,#1a1a2e 0%,#16213e 100%)'
+};
+
+let currentTheme = 'classic';
+let currentWallpaper = 'bliss';
+
+function applyTheme(t) {
+  currentTheme = t;
+  document.documentElement.style.setProperty('--titlebar-bg', THEMES[t] || THEMES.classic);
+  document.querySelectorAll('.xp-titlebar:not(.xp-window.inactive .xp-titlebar)').forEach(el => {
+    if (!el.closest('.xp-window.inactive')) el.style.background = THEMES[t] || THEMES.classic;
+  });
+  document.querySelectorAll('.tw-titlebar').forEach(el => el.style.background = THEMES[t] || THEMES.classic);
+  const sel = document.getElementById('tw-theme');
+  if (sel) sel.value = t;
+}
+
+function setTheme(t) { applyTheme(t); }
+
+function setWallpaper(w) {
+  currentWallpaper = w;
+  const wp = document.getElementById('wallpaper');
+  if (w === 'space') wp.style.background = 'radial-gradient(ellipse at center,#1a1a4a 0%,#000010 100%)';
+  else if (w === 'solid') wp.style.background = '#1058c3';
+  else { wp.style.background = "url('project/uploads/90278.jpg') center center / cover no-repeat"; }
+  const sel = document.getElementById('tw-wallpaper');
+  if (sel) sel.value = w;
+}
+
+// ── CLOCK ──
+function updateClock() {
+  document.getElementById('clock').textContent =
+    new Date().toLocaleTimeString('pl-PL', { hour:'2-digit', minute:'2-digit' });
+}
+updateClock();
+setInterval(updateClock, 10000);
+
+// ── ICON SELECTION ──
+function selectIcon(el) {
+  document.querySelectorAll('.icon').forEach(i => i.classList.remove('selected'));
+  el.classList.add('selected');
+}
+document.getElementById('desktop').addEventListener('click', e => {
+  if (!e.target.closest('.icon')) document.querySelectorAll('.icon').forEach(i => i.classList.remove('selected'));
+});
+
+// ── CONTEXT MENU ──
+const ctxMenu = document.getElementById('ctx-menu');
+document.getElementById('desktop').addEventListener('contextmenu', e => {
+  if (e.target.closest('.xp-window') || e.target.closest('#taskbar')) return;
+  e.preventDefault();
+  const x = Math.min(e.clientX, window.innerWidth - 180);
+  const y = Math.min(e.clientY, window.innerHeight - 80);
+  ctxMenu.style.left = x + 'px';
+  ctxMenu.style.top  = y + 'px';
+  ctxMenu.classList.add('show');
+});
+document.addEventListener('click', () => closeCtx());
+function closeCtx() { ctxMenu.classList.remove('show'); }
+
+// ── START MENU ──
+function toggleStartMenu() {
+  document.getElementById('start-menu').classList.toggle('open');
+}
+function closeStartMenu() {
+  document.getElementById('start-menu').classList.remove('open');
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('#start-menu') && !e.target.closest('#start-btn')) closeStartMenu();
+});
+
+// ── WINDOW DEFINITIONS ──
+let zTop = 100;
+const openWindows = {};
+const maximized = {};
+
+const WINDOWS = {
+  portfolio: {
+    title: 'Moje Portfolio',
+    icon: '📁',
+    w: 660, h: 460,
+    status: '4 obiekt(ów)',
+    content: () => `
+      <div style="display:flex;flex-direction:column;height:100%;font-family:Tahoma,sans-serif;font-size:11px;">
+        <div style="background:#f0ece0;border-bottom:1px solid #c8c0a8;padding:2px 4px;display:flex;align-items:center;gap:1px;flex-shrink:0;">
+          <button onmouseenter="this.style.border='1px solid #b0a088'" onmouseleave="this.style.border='1px solid transparent'" style="display:flex;align-items:center;gap:2px;background:none;border:1px solid transparent;border-radius:2px;padding:2px 5px;cursor:pointer;font-family:Tahoma;font-size:11px;">
+            <img src="project/uploads/Back-0ba7add2.png" style="height:20px;"> Back <span style="font-size:9px;">▾</span>
+          </button>
+          <button onmouseenter="this.style.border='1px solid #b0a088'" onmouseleave="this.style.border='1px solid transparent'" style="display:flex;align-items:center;gap:2px;background:none;border:1px solid transparent;border-radius:2px;padding:2px 4px;cursor:pointer;">
+            <img src="project/uploads/Forward.png" style="height:20px;"> <span style="font-size:9px;">▾</span>
+          </button>
+          <button onmouseenter="this.style.border='1px solid #b0a088'" onmouseleave="this.style.border='1px solid transparent'" style="display:flex;align-items:center;gap:2px;background:none;border:1px solid transparent;border-radius:2px;padding:2px 4px;cursor:pointer;">
+            <img src="project/uploads/Up.png" style="height:20px;">
+          </button>
+          <div style="width:1px;height:22px;background:#c0b8a0;margin:0 3px;"></div>
+          <button onmouseenter="this.style.border='1px solid #b0a088'" onmouseleave="this.style.border='1px solid transparent'" style="display:flex;align-items:center;gap:4px;background:none;border:1px solid transparent;border-radius:2px;padding:2px 6px;cursor:pointer;font-family:Tahoma;font-size:11px;">
+            <img src="project/uploads/Search.png" style="height:20px;"> Search
+          </button>
+          <button onmouseenter="this.style.border='1px solid #b0a088'" onmouseleave="this.style.border='1px solid transparent'" style="display:flex;align-items:center;gap:4px;background:none;border:1px solid transparent;border-radius:2px;padding:2px 6px;cursor:pointer;font-family:Tahoma;font-size:11px;">
+            <img src="project/uploads/Folder View.png" style="height:20px;"> Folders
+          </button>
+          <div style="width:1px;height:22px;background:#c0b8a0;margin:0 3px;"></div>
+          <button onmouseenter="this.style.border='1px solid #b0a088'" onmouseleave="this.style.border='1px solid transparent'" style="display:flex;align-items:center;gap:2px;background:none;border:1px solid transparent;border-radius:2px;padding:2px 4px;cursor:pointer;font-family:Tahoma;font-size:11px;">
+            <img src="project/uploads/Folder View - Classic.png" style="height:20px;"> <span style="font-size:9px;">▾</span>
+          </button>
+          <div style="margin-left:auto;">
+            <img src="project/uploads/clipart1893750.png" style="width:24px;height:24px;opacity:0.8;">
+          </div>
+        </div>
+        <div style="background:#f0ece0;border-bottom:1px solid #c0b8a8;padding:2px 6px;display:flex;align-items:center;gap:6px;flex-shrink:0;">
+          <span style="color:#444;font-size:11px;font-weight:700;">Address</span>
+          <div style="display:flex;align-items:center;flex:1;background:#fff;border:2px inset #d0c8b8;padding:1px 4px;gap:4px;">
+            <img src="project/uploads/My Documents.png" style="width:16px;height:16px;">
+            <span style="font-size:11px;color:#000;">C:\\Moje dokumenty\\Portfolio</span>
+          </div>
+          <button style="background:linear-gradient(180deg,#f8f4e8,#e8e0d0);border:1px solid #b8b0a0;border-radius:3px;padding:2px 10px;cursor:pointer;font-family:Tahoma;font-size:11px;display:flex;align-items:center;gap:3px;color:#1652c1;font-weight:700;">Go →</button>
+        </div>
+        <div style="display:flex;flex:1;overflow:hidden;">
+          <div style="width:185px;background:linear-gradient(180deg,#6080c8 0%,#7090d8 30%,#8098d0 100%);border-right:1px solid #5070b8;overflow-y:auto;flex-shrink:0;padding:8px 6px;">
+            <div style="margin-bottom:8px;">
+              <div style="background:linear-gradient(90deg,#3060b0,#4878cc);color:#fff;font-size:11px;font-weight:700;padding:4px 8px;border-radius:4px 4px 0 0;display:flex;justify-content:space-between;align-items:center;">
+                <span>File and Folder Tasks</span><span style="font-size:10px;">⋀</span>
+              </div>
+              <div style="background:rgba(220,230,255,0.85);border-radius:0 0 4px 4px;padding:6px 8px;">
+                <div style="display:flex;align-items:center;gap:6px;padding:3px 0;color:#1040a0;cursor:pointer;font-size:11px;text-decoration:underline;" onclick="openWindow('contact')">
+                  <img src="project/uploads/Outlook Express.png" style="width:16px;height:16px;"> Wyślij wiadomość
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;padding:3px 0;color:#1040a0;cursor:pointer;font-size:11px;text-decoration:underline;">
+                  🌐 Opublikuj w sieci
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;padding:3px 0;color:#1040a0;cursor:pointer;font-size:11px;text-decoration:underline;">
+                  📋 Udostępnij folder
+                </div>
+              </div>
+            </div>
+            <div style="margin-bottom:8px;">
+              <div style="background:linear-gradient(90deg,#3060b0,#4878cc);color:#fff;font-size:11px;font-weight:700;padding:4px 8px;border-radius:4px 4px 0 0;display:flex;justify-content:space-between;align-items:center;">
+                <span>Other Places</span><span style="font-size:10px;">⋀</span>
+              </div>
+              <div style="background:rgba(220,230,255,0.85);border-radius:0 0 4px 4px;padding:6px 8px;">
+                <div style="display:flex;align-items:center;gap:6px;padding:3px 0;color:#1040a0;cursor:pointer;font-size:11px;text-decoration:underline;" onclick="openWindow('about')">
+                  <img src="project/uploads/User Accounts.png" style="width:16px;height:16px;"> O mnie
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;padding:3px 0;color:#1040a0;cursor:pointer;font-size:11px;text-decoration:underline;" onclick="openWindow('services')">
+                  <img src="project/uploads/My Computer.png" style="width:16px;height:16px;"> Usługi
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;padding:3px 0;color:#1040a0;cursor:pointer;font-size:11px;text-decoration:underline;" onclick="openWindow('contact')">
+                  <img src="project/uploads/Outlook Express.png" style="width:16px;height:16px;"> Kontakt
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;padding:3px 0;color:#1040a0;cursor:pointer;font-size:11px;text-decoration:underline;" onclick="openWindow('faq')">
+                  <img src="project/uploads/Wordpad.png" style="width:16px;height:16px;"> FAQ
+                </div>
+              </div>
+            </div>
+            <div>
+              <div style="background:linear-gradient(90deg,#3060b0,#4878cc);color:#fff;font-size:11px;font-weight:700;padding:4px 8px;border-radius:4px;display:flex;justify-content:space-between;align-items:center;">
+                <span>Details</span><span style="font-size:10px;">⋁</span>
+              </div>
+            </div>
+          </div>
+          <div style="flex:1;background:#fff;padding:12px;overflow-y:auto;">
+            <div
+              style="display:inline-flex;flex-direction:column;align-items:center;gap:4px;padding:6px;cursor:pointer;border:1px solid transparent;border-radius:2px;width:90px;vertical-align:top;"
+              ondblclick="window.open('https://tnz-app.netlify.app','_blank')"
+              onmouseenter="this.style.background='#c8d8f8';this.style.borderColor='#6090d0'"
+              onmouseleave="this.style.background='transparent';this.style.borderColor='transparent'"
+            >
+              <div style="position:relative;width:48px;height:48px;">
+                <img src="project/uploads/Internet Explorer 6.png" style="width:48px;height:48px;">
+                <div style="position:absolute;bottom:0;left:0;width:14px;height:14px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;border:1px solid #bbb;">↗</div>
+              </div>
+              <span style="font-size:11px;font-family:Tahoma;text-align:center;line-height:1.3;color:#000;">TNZ App</span>
+            </div>
+            <div
+              style="display:inline-flex;flex-direction:column;align-items:center;gap:4px;padding:6px;cursor:pointer;border:1px solid transparent;border-radius:2px;width:90px;vertical-align:top;"
+              ondblclick="window.open('https://mwmarszalek.dev/','_blank')"
+              onmouseenter="this.style.background='#c8d8f8';this.style.borderColor='#6090d0'"
+              onmouseleave="this.style.background='transparent';this.style.borderColor='transparent'"
+              title="mwmarszalek.dev"
+            >
+              <div style="position:relative;width:48px;height:48px;">
+                <img src="project/uploads/Internet Explorer 6.png" style="width:48px;height:48px;">
+                <div style="position:absolute;bottom:0;left:0;width:14px;height:14px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;border:1px solid #bbb;line-height:1;">↗</div>
+              </div>
+              <span style="font-size:11px;font-family:Tahoma;text-align:center;line-height:1.3;color:#000;">mwmarszalek.dev</span>
+            </div>
+            <div
+              style="display:inline-flex;flex-direction:column;align-items:center;gap:4px;padding:6px;cursor:pointer;border:1px solid transparent;border-radius:2px;width:90px;vertical-align:top;"
+              ondblclick="window.open('https://property.jll.com/','_blank')"
+              onmouseenter="this.style.background='#c8d8f8';this.style.borderColor='#6090d0'"
+              onmouseleave="this.style.background='transparent';this.style.borderColor='transparent'"
+            >
+              <div style="position:relative;width:48px;height:48px;">
+                <img src="project/uploads/Internet Explorer 6.png" style="width:48px;height:48px;">
+                <div style="position:absolute;bottom:0;left:0;width:14px;height:14px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;border:1px solid #bbb;">↗</div>
+              </div>
+              <span style="font-size:11px;font-family:Tahoma;text-align:center;line-height:1.3;color:#000;">JLL Property</span>
+            </div>
+            <div
+              style="display:inline-flex;flex-direction:column;align-items:center;gap:4px;padding:6px;cursor:pointer;border:1px solid transparent;border-radius:2px;width:90px;vertical-align:top;"
+              ondblclick="window.open('https://mwmarszalek.dev/','_blank')"
+              onmouseenter="this.style.background='#c8d8f8';this.style.borderColor='#6090d0'"
+              onmouseleave="this.style.background='transparent';this.style.borderColor='transparent'"
+            >
+              <div style="position:relative;width:48px;height:48px;">
+                <img src="project/uploads/Internet Explorer 6.png" style="width:48px;height:48px;">
+                <div style="position:absolute;bottom:0;left:0;width:14px;height:14px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;border:1px solid #bbb;">↗</div>
+              </div>
+              <span style="font-size:11px;font-family:Tahoma;text-align:center;line-height:1.3;color:#000;">marszalek.dev</span>
+            </div>
+          </div>
+        </div>
+      </div>`
+  },
+
+  about: {
+    title: 'O mnie',
+    icon: '👤',
+    w: 580, h: 440,
+    status: 'marszal. — Developer',
+    content: () => `
+      <div class="win-section">
+        <h2>👤 O mnie</h2>
+        <div class="about-card">
+          <div class="about-avatar">👨‍💻</div>
+          <div class="about-info">
+            <h3>Marszal</h3>
+            <div class="role">Założyciel · Full-stack Developer</div>
+            <p>Tworzę proste, skuteczne aplikacje webowe i PWA dla małych i średnich firm. Wierzę, że dobre oprogramowanie nie musi być skomplikowane ani drogie.</p>
+            <p>Specjalizuję się w szybkich wdrożeniach — od pomysłu do działającej aplikacji w kilka tygodni. Każdy projekt traktuję indywidualnie i dbam o to, żeby rozwiązanie naprawdę pasowało do potrzeb klienta.</p>
+            <div>
+              <span class="xp-badge">React</span>
+              <span class="xp-badge">JavaScript</span>
+              <span class="xp-badge">PWA</span>
+              <span class="xp-badge">CSS</span>
+              <span class="xp-badge">Firebase</span>
+              <span class="xp-badge">Netlify</span>
+            </div>
+          </div>
+        </div>
+        <p style="font-size:11px;color:#666;">💡 <em>marszal.</em> to jednoosobowa firma programistyczna nastawiona na konkretne wyniki i bezpośrednią współpracę z klientem.</p>
+      </div>`
+  },
+
+  services: {
+    title: 'Usługi',
+    icon: '💻',
+    w: 620, h: 460,
+    status: '4 usługi dostępne',
+    content: () => `
+      <div class="win-section">
+        <h2>💻 Co oferuję</h2>
+        <div class="srv-list">
+          <div class="srv-item">
+            <div class="srv-item-icon">🌐</div>
+            <div><h3>Aplikacje webowe</h3><p>Nowoczesne, szybkie aplikacje webowe dopasowane do procesów Twojej firmy. Zero zbędnych funkcji — tylko to, czego naprawdę potrzebujesz.</p></div>
+          </div>
+          <div class="srv-item">
+            <div class="srv-item-icon">📱</div>
+            <div><h3>PWA — działa jak aplikacja mobilna</h3><p>Progressive Web App to strona, którą można zainstalować na telefonie lub komputerze bez App Store. Działa offline, jest szybka i tania w utrzymaniu.</p></div>
+          </div>
+          <div class="srv-item">
+            <div class="srv-item-icon">⚡</div>
+            <div><h3>Szybkie wdrożenia</h3><p>Od pomysłu do działającej aplikacji w 2–4 tygodnie. Małe zespoły = szybkie decyzje i elastyczność.</p></div>
+          </div>
+          <div class="srv-item">
+            <div class="srv-item-icon">🔧</div>
+            <div><h3>Wsparcie i utrzymanie</h3><p>Nie znikam po wdrożeniu. Aktualizacje, poprawki, nowe funkcje — jestem z Tobą na każdym etapie rozwoju produktu.</p></div>
+          </div>
+        </div>
+      </div>`
+  },
+
+  contact: {
+    title: 'Kontakt — Umów rozmowę',
+    icon: '✉️',
+    w: 560, h: 460,
+    status: 'Odpowiedź w < 24h',
+    content: () => `
+      <div class="win-section">
+        <h2>✉️ Napisz do mnie</h2>
+        <p>Masz pomysł na aplikację? Potrzebujesz zautomatyzować procesy w firmie? Pierwsza rozmowa jest bezpłatna i niezobowiązująca.</p>
+        <div style="margin-bottom:16px;padding:10px;background:#f0f4ff;border:1px solid #c0d0f0;border-radius:3px;font-size:11px;line-height:1.7;">
+          📧 <strong>kontakt@marszal.dev</strong><br>
+          ⚡ Odpowiedź w &lt;24h<br>
+          🎯 Bezpłatna wycena projektu
+        </div>
+        <form class="contact-form" onsubmit="handleContact(event)">
+          <div><label class="cf-label">Twoje imię</label><input class="cf-input" type="text" placeholder="Jan Kowalski" required></div>
+          <div><label class="cf-label">E-mail</label><input class="cf-input" type="email" placeholder="jan@firma.pl" required></div>
+          <div><label class="cf-label">Firma (opcjonalnie)</label><input class="cf-input" type="text" placeholder="Nazwa firmy"></div>
+          <div><label class="cf-label">Wiadomość</label><textarea class="cf-textarea" placeholder="Opisz swój pomysł lub projekt..." required></textarea></div>
+          <button type="submit" class="xp-submit-btn">Wyślij wiadomość</button>
+        </form>
+      </div>`
+  },
+
+  faq: {
+    title: 'FAQ — Często zadawane pytania',
+    icon: '❓',
+    w: 580, h: 440,
+    status: '5 pytań',
+    content: () => `
+      <div class="win-section">
+        <h2>❓ Często zadawane pytania</h2>
+        <div class="faq-list">
+          ${[
+            ['Ile kosztuje aplikacja webowa?','Każdy projekt wyceniam indywidualnie po krótkim wywiadzie. Pierwsza rozmowa i wycena są bezpłatne. Pracuję zarówno z budżetami startowymi, jak i większymi projektami.'],
+            ['Jak długo trwa realizacja projektu?','Proste aplikacje i PWA realizuję w 2–4 tygodnie. Bardziej złożone projekty — od 4 do 8 tygodni. Mała struktura = szybkie decyzje i elastyczność.'],
+            ['Czym jest PWA i dlaczego warto?','PWA (Progressive Web App) to aplikacja webowa, którą można zainstalować na telefonie lub komputerze jak normalną aplikację — bez App Store. Działa offline, jest szybka i tania w utrzymaniu.'],
+            ['Czy mogę zlecić tylko część projektu?','Tak. Mogę pomóc przy konkretnym etapie: projektowaniu UI, wdrożeniu funkcji, optymalizacji lub utrzymaniu istniejącej aplikacji.'],
+            ['Jak wygląda współpraca?','Zaczynamy od bezpłatnej rozmowy, potem proponuję zakres i wycenę. Pracuję w krótkich cyklach — regularnie pokazuję postępy i zbieram feedback.'],
+          ].map(([q,a],i) => `
+            <div>
+              <button class="faq-q-btn" onclick="toggleFaq(${i})" id="fq${i}">${q} <span>▶</span></button>
+              <div class="faq-answer" id="fa${i}">${a}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>`
+  }
+};
+
+// ── FAQ ──
+function toggleFaq(i) {
+  const a = document.getElementById('fa' + i);
+  const b = document.getElementById('fq' + i);
+  const isOpen = a.classList.contains('open');
+  document.querySelectorAll('.faq-answer').forEach(el => el.classList.remove('open'));
+  document.querySelectorAll('.faq-q-btn').forEach(el => el.classList.remove('open'));
+  if (!isOpen) { a.classList.add('open'); b.classList.add('open'); }
+}
+
+// ── CONTACT ──
+function handleContact(e) {
+  e.preventDefault();
+  const btn = e.target.querySelector('.xp-submit-btn');
+  btn.textContent = '✓ Wysłano!';
+  btn.style.background = '#d4f0d4';
+  setTimeout(() => { btn.textContent = 'Wyślij wiadomość'; btn.style.background = ''; }, 3000);
+}
+
+// ── WINDOW MANAGEMENT ──
+function openWindow(id) {
+  closeStartMenu();
+  if (openWindows[id]) {
+    openWindows[id].classList.remove('minimized');
+    focusWindow(id);
+    return;
+  }
+  const cfg = WINDOWS[id];
+  if (!cfg) return;
+
+  const win = document.createElement('div');
+  win.className = 'xp-window';
+  win.id = 'win-' + id;
+  win.dataset.winId = id;
+
+  const offset = Object.keys(openWindows).length * 28;
+  const x = Math.max(60, Math.min(80 + offset, window.innerWidth - cfg.w - 40));
+  const y = Math.max(10, Math.min(50 + offset, window.innerHeight - cfg.h - 60));
+  win.style.left  = x + 'px';
+  win.style.top   = y + 'px';
+  win.style.width  = cfg.w + 'px';
+  win.style.height = cfg.h + 'px';
+
+  const titlebarStyle = THEMES[currentTheme] || THEMES.classic;
+  win.innerHTML = `
+    <div class="xp-titlebar" style="background:${titlebarStyle}" onmousedown="startDrag(event,'${id}')">
+      <span class="xp-title-icon">${cfg.icon}</span>
+      <span class="xp-title-text">${cfg.title}</span>
+      <div class="xp-controls">
+        <button class="xp-btn" onclick="minimizeWindow('${id}')" title="Minimalizuj"><img src="project/uploads/Minimize.png" style="width:18px;height:18px;display:block;"></button>
+        <button class="xp-btn" onclick="maximizeWindow('${id}')" title="Maksymalizuj"><img src="project/uploads/Maximize.png" style="width:18px;height:18px;display:block;"></button>
+        <button class="xp-btn" onclick="closeWindow('${id}')" title="Zamknij"><img src="project/uploads/Exit.png" style="width:18px;height:18px;display:block;"></button>
+      </div>
+    </div>
+    <div class="xp-content" style="${id === 'portfolio' ? 'padding:0;overflow:hidden;' : ''}">
+      ${cfg.content()}
+    </div>
+    <div class="xp-statusbar">
+      <div class="xp-status-panel">${cfg.status || ''}</div>
+    </div>`;
+
+  document.getElementById('windows-container').appendChild(win);
+  openWindows[id] = win;
+
+  const tbBtn = document.createElement('button');
+  tbBtn.className = 'taskbar-btn active';
+  tbBtn.id = 'tb-' + id;
+  tbBtn.innerHTML = cfg.icon + ' ' + cfg.title;
+  tbBtn.onclick = () => {
+    if (win.classList.contains('minimized')) { win.classList.remove('minimized'); focusWindow(id); }
+    else if (win.classList.contains('focused')) { minimizeWindow(id); }
+    else { focusWindow(id); }
+  };
+  document.getElementById('taskbar-windows').appendChild(tbBtn);
+
+  focusWindow(id);
+  makeResizable(win);
+}
+
+function focusWindow(id) {
+  zTop++;
+  Object.keys(openWindows).forEach(k => {
+    openWindows[k].classList.remove('focused');
+    openWindows[k].classList.add('inactive');
+    const tb = document.getElementById('tb-' + k);
+    if (tb) tb.classList.remove('active');
+  });
+  const win = openWindows[id];
+  if (!win) return;
+  win.style.zIndex = zTop;
+  win.classList.add('focused');
+  win.classList.remove('inactive');
+  const tb = document.getElementById('tb-' + id);
+  if (tb) tb.classList.add('active');
+}
+
+function minimizeWindow(id) {
+  openWindows[id].classList.add('minimized');
+  openWindows[id].classList.remove('focused');
+  const tb = document.getElementById('tb-' + id);
+  if (tb) tb.classList.remove('active');
+}
+
+function closeWindow(id) {
+  const win = openWindows[id];
+  if (win) win.remove();
+  delete openWindows[id];
+  delete maximized[id];
+  const tb = document.getElementById('tb-' + id);
+  if (tb) tb.remove();
+}
+
+function maximizeWindow(id) {
+  const win = openWindows[id];
+  if (!win) return;
+  if (maximized[id]) {
+    win.style.left   = maximized[id].l;
+    win.style.top    = maximized[id].t;
+    win.style.width  = maximized[id].w;
+    win.style.height = maximized[id].h;
+    delete maximized[id];
+  } else {
+    maximized[id] = { l:win.style.left, t:win.style.top, w:win.style.width, h:win.style.height };
+    win.style.left   = '0';
+    win.style.top    = '0';
+    win.style.width  = '100vw';
+    win.style.height = 'calc(100vh - 40px)';
+  }
+}
+
+// ── DRAG ──
+let dragging = null, dragOffX = 0, dragOffY = 0;
+function startDrag(e, id) {
+  if (e.target.classList.contains('xp-btn') || e.target.tagName === 'IMG' && e.target.closest('.xp-btn')) return;
+  focusWindow(id);
+  dragging = id;
+  const rect = openWindows[id].getBoundingClientRect();
+  dragOffX = e.clientX - rect.left;
+  dragOffY = e.clientY - rect.top;
+  e.preventDefault();
+}
+document.addEventListener('mousemove', e => {
+  if (!dragging) return;
+  const win = openWindows[dragging];
+  if (!win) return;
+  const x = Math.max(0, Math.min(e.clientX - dragOffX, window.innerWidth  - win.offsetWidth));
+  const y = Math.max(0, Math.min(e.clientY - dragOffY, window.innerHeight - 40 - win.offsetHeight));
+  win.style.left = x + 'px';
+  win.style.top  = y + 'px';
+});
+document.addEventListener('mouseup', () => { dragging = null; });
+
+// ── RESIZE ──
+function makeResizable(win) {
+  const handle = document.createElement('div');
+  handle.className = 'xp-resize';
+  handle.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16"><path d="M16 10 L10 16 M16 6 L6 16 M16 14 L14 16" stroke="#999" stroke-width="1.5"/></svg>`;
+  win.appendChild(handle);
+  let resizing = false, sx = 0, sy = 0, sw = 0, sh = 0;
+  handle.addEventListener('mousedown', e => {
+    resizing = true; sx = e.clientX; sy = e.clientY;
+    sw = win.offsetWidth; sh = win.offsetHeight;
+    e.preventDefault(); e.stopPropagation();
+  });
+  document.addEventListener('mousemove', e => {
+    if (!resizing) return;
+    win.style.width  = Math.max(320, sw + e.clientX - sx) + 'px';
+    win.style.height = Math.max(200, sh + e.clientY - sy) + 'px';
+  });
+  document.addEventListener('mouseup', () => { resizing = false; });
+}
+
+// Focus window on click
+document.getElementById('windows-container').addEventListener('mousedown', e => {
+  const win = e.target.closest('.xp-window');
+  if (win) focusWindow(win.dataset.winId);
+});
+
+// ── ICON DRAG ──
+(function () {
+  let dragIcon = null, offX = 0, offY = 0;
+
+  function initIconPositions() {
+    const icons = document.querySelectorAll('#icons-area .icon');
+    const container = document.getElementById('icons-area');
+    container.style.position = 'absolute';
+    container.style.inset = '0';
+    container.style.display = 'block';
+    let col = 0, row = 0;
+    icons.forEach(ic => {
+      ic.style.position = 'absolute';
+      ic.style.left = (20 + col * 90) + 'px';
+      ic.style.top  = (20 + row * 100) + 'px';
+      ic.style.width = '76px';
+      row++;
+      if ((row + 1) * 100 > window.innerHeight - 60) { row = 0; col++; }
+    });
+  }
+  initIconPositions();
+  window.arrangeIcons = initIconPositions;
+
+  document.querySelectorAll('#icons-area .icon').forEach(ic => {
+    ic.addEventListener('mousedown', e => {
+      if (e.detail === 2) return;
+      selectIcon(ic);
+      dragIcon = ic;
+      offX = e.clientX - ic.getBoundingClientRect().left;
+      offY = e.clientY - ic.getBoundingClientRect().top;
+      ic.style.zIndex = 50;
+      e.preventDefault();
+      e.stopPropagation();
+    });
+  });
+
+  document.addEventListener('mousemove', e => {
+    if (!dragIcon) return;
+    const x = Math.max(0, Math.min(e.clientX - offX, window.innerWidth  - 80));
+    const y = Math.max(0, Math.min(e.clientY - offY, window.innerHeight - 100));
+    dragIcon.style.left = x + 'px';
+    dragIcon.style.top  = y + 'px';
+  });
+  document.addEventListener('mouseup', () => {
+    if (dragIcon) { dragIcon.style.zIndex = ''; dragIcon = null; }
+  });
+})();
+
+// ── INIT ──
+applyTheme('classic');
+setTimeout(() => openWindow('about'), 400);
+</script>
+</body>
+</html>
