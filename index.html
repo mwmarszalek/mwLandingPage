@@ -529,6 +529,16 @@ body {
 .ctx-item:hover { background:#316ac5; color:#fff; }
 .ctx-sep { height:1px; background:#d4d0c8; margin:2px 4px; }
 
+/* ── SELECTION RECT ── */
+#selection-rect {
+  position:fixed;
+  border:1px solid #316ac5;
+  background:rgba(49,106,197,0.2);
+  pointer-events:none;
+  z-index:8000;
+  display:none;
+}
+
 @media(max-width:768px){
   #start-menu { width:100%; }
   .xp-window { left:4px!important; right:4px!important; width:calc(100vw - 8px)!important; }
@@ -634,6 +644,7 @@ body {
 </div>
 
 <div id="windows-container"></div>
+<div id="selection-rect"></div>
 
 <div id="tweaks-panel">
   <div class="tw-titlebar">
@@ -1165,9 +1176,11 @@ document.getElementById('windows-container').addEventListener('mousedown', e => 
   if (win) focusWindow(win.dataset.winId);
 });
 
-// ── ICON DRAG ──
+// ── ICON DRAG & RUBBER-BAND SELECTION ──
 (function () {
   let dragIcon = null, offX = 0, offY = 0;
+  let selecting = false, selX0 = 0, selY0 = 0;
+  const selRect = document.getElementById('selection-rect');
 
   function initIconPositions() {
     const icons = document.querySelectorAll('#icons-area .icon');
@@ -1188,10 +1201,12 @@ document.getElementById('windows-container').addEventListener('mousedown', e => 
   initIconPositions();
   window.arrangeIcons = initIconPositions;
 
+  // Icon mousedown — drag single icon
   document.querySelectorAll('#icons-area .icon').forEach(ic => {
     ic.addEventListener('mousedown', e => {
       if (e.detail === 2) return;
-      selectIcon(ic);
+      if (!e.shiftKey) selectIcon(ic);
+      else ic.classList.toggle('selected');
       dragIcon = ic;
       offX = e.clientX - ic.getBoundingClientRect().left;
       offY = e.clientY - ic.getBoundingClientRect().top;
@@ -1201,15 +1216,49 @@ document.getElementById('windows-container').addEventListener('mousedown', e => 
     });
   });
 
-  document.addEventListener('mousemove', e => {
-    if (!dragIcon) return;
-    const x = Math.max(0, Math.min(e.clientX - offX, window.innerWidth  - 80));
-    const y = Math.max(0, Math.min(e.clientY - offY, window.innerHeight - 100));
-    dragIcon.style.left = x + 'px';
-    dragIcon.style.top  = y + 'px';
+  // Desktop mousedown — start rubber-band
+  document.getElementById('wallpaper').addEventListener('mousedown', e => {
+    if (e.button !== 0) return;
+    if (!e.shiftKey) document.querySelectorAll('.icon').forEach(i => i.classList.remove('selected'));
+    selecting = true;
+    selX0 = e.clientX;
+    selY0 = e.clientY;
+    selRect.style.left   = selX0 + 'px';
+    selRect.style.top    = selY0 + 'px';
+    selRect.style.width  = '0';
+    selRect.style.height = '0';
+    selRect.style.display = 'block';
+    e.preventDefault();
   });
+
+  document.addEventListener('mousemove', e => {
+    // Icon drag
+    if (dragIcon) {
+      const x = Math.max(0, Math.min(e.clientX - offX, window.innerWidth  - 80));
+      const y = Math.max(0, Math.min(e.clientY - offY, window.innerHeight - 100));
+      dragIcon.style.left = x + 'px';
+      dragIcon.style.top  = y + 'px';
+      return;
+    }
+    // Rubber-band
+    if (!selecting) return;
+    const x1 = Math.min(e.clientX, selX0), y1 = Math.min(e.clientY, selY0);
+    const x2 = Math.max(e.clientX, selX0), y2 = Math.max(e.clientY, selY0);
+    selRect.style.left   = x1 + 'px';
+    selRect.style.top    = y1 + 'px';
+    selRect.style.width  = (x2 - x1) + 'px';
+    selRect.style.height = (y2 - y1) + 'px';
+
+    document.querySelectorAll('#icons-area .icon').forEach(ic => {
+      const r = ic.getBoundingClientRect();
+      const hit = r.left < x2 && r.right > x1 && r.top < y2 && r.bottom > y1;
+      ic.classList.toggle('selected', hit);
+    });
+  });
+
   document.addEventListener('mouseup', () => {
     if (dragIcon) { dragIcon.style.zIndex = ''; dragIcon = null; }
+    if (selecting) { selecting = false; selRect.style.display = 'none'; }
   });
 })();
 
